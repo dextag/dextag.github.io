@@ -18,14 +18,89 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
 
-  <script src="https://kit.fontawesome.com/19914a84eb.js" crossorigin="anonymous"></script>
-
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
   <script src="./static/js/bulma-carousel.min.js"></script>
   <script src="./static/js/bulma-slider.min.js"></script>
   <script src="./static/js/index.js"></script>
 
   <style>
+    .hero-banner {
+      height: max(28.125vw, 420px);
+    }
+
+    .hero-banner .hero-video video {
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      object-fit: cover;
+      transform: none;
+    }
+
+    .hero-banner .hero-body {
+      padding: 0.5rem 1.5rem;
+    }
+
+    .hero-banner .subtitle.publication-title {
+      margin-bottom: clamp(0.75rem, 1.2vw, 1.5rem);
+    }
+
+    .hero-links {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem 0;
+    }
+
+    .hero-links a:not(.button) {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.5rem 1rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    }
+
+    .hero-links .icon {
+      margin-right: 0.25rem;
+    }
+
+    .hero-authors,
+    .hero-affiliations {
+      font-family: 'Google Sans', sans-serif;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    }
+
+    .hero-authors {
+      font-size: clamp(1rem, 1.4vw, 1.75rem);
+      margin-bottom: 0.2rem;
+    }
+
+    .hero-affiliations {
+      font-size: clamp(0.85rem, 1vw, 1.25rem);
+      opacity: 0.85;
+    }
+
+    .hero-links a:not(.button):hover span:last-child,
+    .hero-authors a:hover {
+      text-decoration: underline;
+    }
+
+    @media screen and (max-width: 768px) {
+      .hero-banner {
+        height: auto;
+      }
+
+      .hero-banner .hero-body {
+        padding: 3rem 1.5rem;
+      }
+
+      .hero-authors {
+        font-size: 1.15rem;
+      }
+    }
+
     .project-nav ul {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -52,7 +127,7 @@
 
 <body>
 
-<section class="hero is-link video" style="overflow: hidden; position:relative; height: 28.125vw;">
+<section class="hero is-link video hero-banner" style="overflow: hidden; position:relative;">
   <div class="hero-video" style="height: 100%; width: 100%;">
     <video playsinline autoplay muted loop>
       <source src=" ./static/videos/teaser-small.mp4" type="video/mp4">
@@ -65,6 +140,20 @@
     </video>
   </div>
   <div class="overlay"></div>
+
+  <div class="hero-head is-hidden-mobile">
+    <nav class="hero-links is-size-5">
+      <a href="https://dextag.github.io/">
+        <span class="icon"><i class="ai ai-arxiv"></i></span>
+        <span>arXiv</span>
+      </a>
+      <a href="https://dextag.github.io/" class="button is-medium">
+        <span class="icon"><i class="fab fa-github"></i></span>
+        <span>Code</span>
+      </a>
+    </nav>
+  </div>
+
   <div class="hero-body" style="display:flex; align-items:center; justify-content:center;">
     <div class="container has-text-centered">
       <h1 class="title is-1 publication-title is-size-1-mobile" style="font-size: 4.5vw;">
@@ -73,9 +162,33 @@
       <h1 class="subtitle is-1 publication-title is-size-4-mobile" style="font-size: 2.2vw;">
         Tactile-as-Guidance in Reinforcement Learning <br class="is-hidden-mobile"> for Dexterous Manipulation
       </h1>
-      <h1 class="is-2 is-italic is-size-4-mobile" style="font-size: 1.6vw; opacity: 80%;">
-        Anonymous ICRA 2027 Submission
-      </h1>
+      <p class="hero-authors">
+        <span class="author-block"><a href="https://hanyangclarence.github.io/">Han Yang</a><sup>1</sup>,</span>
+        <span class="author-block"><a href="https://wangyian-me.github.io/">Yian Wang</a><sup>1</sup>,</span>
+        <span class="author-block"><a href="https://yunlong-song.com/">Yunlong Song</a><sup>2</sup>,</span>
+        <span class="author-block"><a href="https://zhenjiaxu.com/">Zhenjia Xu</a><sup>2</sup>,</span>
+        <span class="author-block"><a href="https://people.csail.mit.edu/ganchuang/">Chuang Gan</a><sup>1</sup></span>
+      </p>
+      <p class="hero-affiliations">
+        <span class="author-block"><sup>1</sup>UMass Amherst</span>
+        &nbsp;&nbsp;
+        <span class="author-block"><sup>2</sup>Genesis AI</span>
+      </p>
+
+      <div class="publication-links is-hidden-tablet mt-5">
+        <span class="link-block">
+          <a href="https://dextag.github.io/" class="external-link button is-normal is-rounded is-dark">
+            <span class="icon"><i class="ai ai-arxiv"></i></span>
+            <span>arXiv</span>
+          </a>
+        </span>
+        <span class="link-block">
+          <a href="https://dextag.github.io/" class="external-link button is-normal is-rounded is-dark">
+            <span class="icon"><i class="fab fa-github"></i></span>
+            <span>Code</span>
+          </a>
+        </span>
+      </div>
     </div>
   </div>
 
