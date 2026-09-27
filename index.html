@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+    content="DexTaG: Tactile-as-Guidance in Reinforcement Learning for Dexterous Manipulation">
+  <meta name="keywords" content="Dexterous Hand, Reinforcement Learning, Tactile, Manipulation">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>
+    DexTaG: Tactile-as-Guidance in Reinforcement Learning for Dexterous Manipulation
+  </title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  <script src="https://kit.fontawesome.com/19914a84eb.js" crossorigin="anonymous"></script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+
+  <style>
+    .project-nav ul {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      align-items: stretch;
+      width: 100%;
+    }
+
+    .project-nav li {
+      display: flex;
+      min-width: 0;
+    }
+
+    .project-nav li a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      white-space: normal;
+      text-align: center;
+      padding: 0.75rem;
+    }
+  </style>
+</head>
+
+<body>
+
+<section class="hero is-link video" style="overflow: hidden; position:relative; height: 28.125vw;">
+  <div class="hero-video" style="height: 100%; width: 100%;">
+    <video playsinline autoplay muted loop>
+      <source src=" ./static/videos/teaser-small.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="hero-video is-hidden-tablet is-inline-block-mobile"
+    style="height: 100%; width: 100%;">
+    <video playsinline autoplay muted loop>
+      <source src=" ./static/videos/teaser-mobile-small.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="overlay"></div>
+  <div class="hero-body" style="display:flex; align-items:center; justify-content:center;">
+    <div class="container has-text-centered">
+      <h1 class="title is-1 publication-title is-size-1-mobile" style="font-size: 4.5vw;">
+        DexTaG
+      </h1>
+      <h1 class="subtitle is-1 publication-title is-size-4-mobile" style="font-size: 2.2vw;">
+        Tactile-as-Guidance in Reinforcement Learning <br class="is-hidden-mobile"> for Dexterous Manipulation
+      </h1>
+      <h1 class="is-2 is-italic is-size-4-mobile" style="font-size: 1.6vw; opacity: 80%;">
+        Anonymous ICRA 2027 Submission
+      </h1>
+    </div>
+  </div>
+
+  <div class="hero-foot is-hidden-mobile">
+    <nav class="tabs is-boxed is-size-5 project-nav">
+      <ul>
+        <li>
+          <a href="#data-collection">
+            Tactile Demonstration Collection and Preprocessing
+          </a>
+        </li>
+        <li>
+          <a href="#retargeter-training">
+            Tactile-Guided RL Retargeting
+          </a>
+        </li>
+        <li>
+          <a href="#student-distillation">
+            Distillation for a Deployable Controller
+          </a>
+        </li>
+        <li>
+          <a href="#other-results">
+            Other Qualitative Results
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</section>
+
+<section class="section is-medium" id="abstract">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+          <p>
+            <strong>DexTaG</strong> is an efficient RL pipeline for learning dexterous tool-use policies from mocap-glove demonstrations.
+          </p>
+          <p>
+            Its key idea is to use the glove's <strong>tactile readouts as reward guidance</strong> during RL training, which guides contact acquisition and human-like grasp formation while reducing reliance on precise reference geometry.
+            The trained retargeter is then distilled into a tactile-free student controller that deploys zero-shot in the real world.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section is-small" id="data-collection">
+  <div class="container is-max-desktop">
+    <h2 class="title is-1 has-text-centered is-size-4-mobile">Tactile Demonstration Collection and Preprocessing</h2>
+    <div class="content has-text-justified">
+      <p>
+        Mocap gloves are a promising path for scaling dexterous manipulation data: they capture dexterous finger motion while the demonstrator manipulates the object directly. The recorded motions are then retargeted to bridge the kinematic gap between the human and robot hand.
+        We use a commercial EMF glove with a full-hand tactile sensor array and process each capture into a hand&ndash;object trajectory used as reference for retargeter training.
+      </p>
+    </div>
+
+    <div style="display:flex; justify-content:center; align-items:flex-start; gap:1.5rem; flex-wrap:wrap;">
+      <div class="has-text-centered" style="width:clamp(284px, 39.1vw, 516px); max-width:100%;">
+        <video id="dc-demo" autoplay muted playsinline preload="auto"
+          style="width:100%; height:auto; border-radius:6px;">
+          <source src="./static/videos/data-collection-demo.mp4" type="video/mp4">
+        </video>
+        <p class="mt-2"><strong>Bare-handed manipulation with the glove unlocks tasks that require in-hand reorientation.</strong></p>
+      </div>
+      <div class="has-text-centered" style="width:clamp(228px, 31.3vw, 412px); max-width:100%;">
+        <video id="dc-results" autoplay muted playsinline preload="auto"
+          style="width:100%; height:auto; border-radius:6px;">
+          <source src="./static/videos/data-collection-results.mp4" type="video/mp4">
+        </video>
+        <p class="mt-2"><strong>Processed hand&ndash;object trajectory</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    var demoVideo = document.getElementById('dc-demo');
+    var resultsVideo = document.getElementById('dc-results');
+    if (!demoVideo || !resultsVideo) return;
+    var limit = Infinity;
+    var started = false;
+
+    function start() {
+      demoVideo.currentTime = 0;
+      resultsVideo.currentTime = 0;
+      demoVideo.play();
+      resultsVideo.play();
+    }
+
+    function maybeStart() {
+      if (started) return;
+      if (demoVideo.readyState >= 1 && resultsVideo.readyState >= 1) {
+        started = true;
+        limit = Math.min(demoVideo.duration, resultsVideo.duration);
+        start();
+      }
+    }
+
+    function tick() {
+      if (!started) return;
+      if (demoVideo.currentTime >= limit || resultsVideo.currentTime >= limit) {
+        start();
+      } else if (Math.abs(demoVideo.currentTime - resultsVideo.currentTime) > 0.3) {
+        resultsVideo.currentTime = demoVideo.currentTime;
+      }
+    }
+
+    demoVideo.addEventListener('loadedmetadata', maybeStart);
+    resultsVideo.addEventListener('loadedmetadata', maybeStart);
+    demoVideo.addEventListener('timeupdate', tick);
+    maybeStart();
+  })();
+</script>
+
+<section class="section is-small" id="retargeter-training">
+  <div class="container is-max-desktop">
+    <h2 class="title is-1 has-text-centered is-size-4-mobile">
+      Tactile-Guided RL Retargeting
+    </h2>
+    <div class="content has-text-justified">
+      <p>
+        We collect two contact-rich tool-use tasks&mdash;marker pen and hammer&mdash;both of which require non-trivial in-hand reorientation.
+      </p>
+      <p>
+        For each task, we train a single retargeting policy over many reference trajectories of the same object.
+        Sharing experience across trajectories helps the policy generalize to held-out references within the same task, without per-trajectory retraining.
+        The glove's tactile readouts provide reward guidance for contact acquisition and human-like grasp formation, reducing reliance on precise reference geometry.
+      </p>
+    </div>
+
+    <div style="display:flex; justify-content:center; align-items:center; gap:1.5rem; flex-wrap:wrap;">
+      <video autoplay muted loop playsinline preload="auto"
+        style="height:clamp(160px, 22vw, 290px); width:auto; max-width:100%; border-radius:6px;">
+        <source src="./static/videos/diversity-marker.mp4" type="video/mp4">
+      </video>
+      <span class="has-text-grey" style="font-size:3rem; line-height:1;">&rarr;</span>
+      <video autoplay muted loop playsinline preload="auto"
+        style="height:clamp(160px, 22vw, 290px); width:auto; max-width:100%; border-radius:6px;">
+        <source src="./static/videos/rollouts-marker.mp4" type="video/mp4">
+      </video>
+    </div>
+
+    <div style="display:flex; justify-content:center; align-items:center; gap:1.5rem; flex-wrap:wrap; margin-top:1.5rem;">
+      <video autoplay muted loop playsinline preload="auto"
+        style="height:clamp(160px, 22vw, 290px); width:auto; max-width:100%; border-radius:6px;">
+        <source src="./static/videos/diversity-hammer.mp4" type="video/mp4">
+      </video>
+      <span class="has-text-grey" style="font-size:3rem; line-height:1;">&rarr;</span>
+      <video autoplay muted loop playsinline preload="auto"
+        style="height:clamp(160px, 22vw, 290px); width:auto; max-width:100%; border-radius:6px;">
+        <source src="./static/videos/rollouts-hammer.mp4" type="video/mp4">
+      </video>
+    </div>
+
+    <style>
+      .results-carousel { overflow: hidden; }
+      .results-carousel .item {
+        margin: 5px;
+        overflow: hidden;
+        border: 1px solid #bbb;
+        border-radius: 10px;
+        padding: 0;
+        font-size: 0;
+      }
+      .results-carousel .item video { width: 100%; display: block; margin: 0; }
+    </style>
+
+    <h3 class="title is-3 has-text-centered is-size-5-mobile mt-6">Qualitative Results</h3>
+    <div class="content has-text-justified">
+      <p>
+        Rollouts of our generalizable retargeter on held-out trajectories.
+        Each panel shows the reference (left), the policy rollout (middle), and the target vs. real-time simulated tactile maps used to compute the tactile rewards (right).
+      </p>
+    </div>
+
+    <div id="marker-carousel" class="carousel results-carousel">
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/marker-result-1.mp4" type="video/mp4"></video>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/marker-result-2.mp4" type="video/mp4"></video>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/marker-result-3.mp4" type="video/mp4"></video>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/marker-result-4.mp4" type="video/mp4"></video>
+      </div>
+    </div>
+
+    <div id="hammer-carousel" class="carousel results-carousel" style="margin-top:2rem;">
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/hammer-result-1.mp4" type="video/mp4"></video>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/hammer-result-2.mp4" type="video/mp4"></video>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/hammer-result-3.mp4" type="video/mp4"></video>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/hammer-result-4.mp4" type="video/mp4"></video>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var carousels = bulmaCarousel.attach('.results-carousel', {
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      loop: true,
+      infinite: true,
+      navigation: true,
+      pagination: true,
+      autoplay: false,
+    });
+
+    var sliderVideos = document.querySelectorAll('.results-carousel video');
+    sliderVideos.forEach(function (video) {
+      if (!video.getAttribute('poster')) {
+        var source = video.querySelector('source');
+        if (source) {
+          var src = source.getAttribute('src');
+          var poster = src.replace('/videos/', '/posters/').replace(/\.mp4$/, '.jpg');
+          video.setAttribute('poster', poster);
+        }
+      }
+    });
+
+    function pauseAll() {
+      sliderVideos.forEach(function (video) { video.pause(); });
+    }
+    carousels.forEach(function (carousel) {
+      carousel.on('before:show', pauseAll);
+    });
+
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          var video = entry.target;
+          var isAutoplay = video.hasAttribute('autoplay');
+          if (entry.isIntersecting) {
+            if (isAutoplay) {
+              video.play().catch(function () {});
+            } else if (video.preload !== 'auto') {
+              video.preload = 'auto';
+              video.load();
+            }
+          } else {
+            video.pause();
+            if (!isAutoplay && video.preload !== 'none') {
+              video.preload = 'none';
+              video.load();
+            }
+          }
+        });
+      }, { threshold: 0 });
+      document.querySelectorAll('video').forEach(function (video) { io.observe(video); });
+    }
+  });
+</script>
+
+<section class="section is-small" id="student-distillation">
+  <div class="container is-max-desktop">
+    <h2 class="title is-1 has-text-centered is-size-4-mobile">
+      Distillation for a Deployable Controller
+    </h2>
+    <div class="content has-text-justified">
+      <p>
+        The retargeter is distilled into a tactile-free student controller whose reference input contains only the target object trajectory, with no reference hand poses. 
+        The controller uses visual&ndash;proprioceptive feedback for real-world deployment.
+        In simulation, the student retains generalization to held-out object trajectories within the same object and task setting.
+        Below are real-world rollouts on collected references: the left panel is the reference object trajectory, and the right panel is the rollout played at <strong>1&times; real-time speed</strong>.
+      </p>
+    </div>
+
+    <div id="real-marker-carousel" class="carousel results-carousel">
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/real-marker-2.mp4" type="video/mp4"></video>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/real-marker-3.mp4" type="video/mp4"></video>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/real-marker-1.mp4" type="video/mp4"></video>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/real-marker-4.mp4" type="video/mp4"></video>
+      </div>
+    </div>
+
+    <div id="real-hammer-carousel" class="carousel results-carousel" style="margin-top:2rem;">
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/real-hammer-4.mp4" type="video/mp4"></video>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/real-hammer-3.mp4" type="video/mp4"></video>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/real-hammer-2.mp4" type="video/mp4"></video>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/real-hammer-1.mp4" type="video/mp4"></video>
+      </div>
+    </div>
+
+    <h3 class="title is-3 has-text-centered is-size-5-mobile mt-6">Generalization to Unseen Trajectories</h3>
+    <div class="content has-text-justified">
+      <p>
+        Because the student's reference input contains only the target object trajectory, we can synthesize new trajectories for it to follow using simple rule-based procedures.
+        Below we show qualitative examples of synthesized pen-writing-letter trajectories in simulation (top) and the real world (bottom): the left panel is the synthesized trajectory, and the right panel is the rollout. Real-world rollouts are played at <strong>1&times; real-time speed</strong>.
+      </p>
+    </div>
+
+    <div id="generalize-sim-carousel" class="carousel results-carousel">
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/generalize-sim-2.mp4" type="video/mp4"></video>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/generalize-sim-1.mp4" type="video/mp4"></video>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/generalize-sim-3.mp4" type="video/mp4"></video>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/generalize-sim-4.mp4" type="video/mp4"></video>
+      </div>
+    </div>
+
+    <div id="generalize-real-carousel" class="carousel results-carousel" style="margin-top:2rem;">
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/generalize-real-1.mp4" type="video/mp4"></video>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/generalize-real-2.mp4" type="video/mp4"></video>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .results-carousel .item .failure-caption {
+    font-size: 1rem;
+    line-height: 1.4;
+    padding: 0.75rem 1rem 2.75rem;
+    color: #444;
+    background: #fff;
+  }
+</style>
+
+<section class="section is-small" id="other-results">
+  <div class="container is-max-desktop">
+    <h2 class="title is-1 has-text-centered is-size-4-mobile">Other Qualitative Results</h2>
+
+    <h3 class="title is-3 has-text-centered is-size-5-mobile">Tactile Reward Ablation</h3>
+    <div class="content has-text-justified">
+      <p>
+        Each video shows three panels, from left to right: <strong>Reference</strong>, <strong>Ours</strong>, and <strong>Geom-gated</strong>.
+        Geom-gated uses the same fingertip-proximity reward but replaces measured tactile contact gates with distance-based labels from the motion reference and omits tactile-map similarity.
+        In these examples, tactile-as-guidance produces a more natural marker-pen grasp and enables hammer pickup, where Geom-gated struggles.
+      </p>
+    </div>
+
+    <div id="baseline-carousel" class="carousel results-carousel">
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/baseline-1.mp4" type="video/mp4"></video>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/baseline-2.mp4" type="video/mp4"></video>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/baseline-3.mp4" type="video/mp4"></video>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/baseline-4.mp4" type="video/mp4"></video>
+      </div>
+    </div>
+
+    <h3 class="title is-3 has-text-centered is-size-5-mobile mt-6">Failure Cases</h3>
+    <div class="content has-text-justified">
+      <p>
+        Representative failure cases observed during real-world deployment.
+      </p>
+    </div>
+
+    <div id="failure-carousel" class="carousel results-carousel">
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/failure-marker-pick.mp4" type="video/mp4"></video>
+        <p class="failure-caption">Failed to pick up the marker pen.</p>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/failure-marker-adjust.mp4" type="video/mp4"></video>
+        <p class="failure-caption">Failed to reorient the marker in-hand into a valid manipulation pose.</p>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/failure-marker-place.mp4" type="video/mp4"></video>
+        <p class="failure-caption">Failed to place the marker onto the table.</p>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/failure-marker-sim2real.mp4" type="video/mp4"></video>
+        <p class="failure-caption">Sub-optimal grasp pose due to a sim-to-real gap: the real-world friction between the fingers is higher than in simulation, leaving the thumb floating rather than supporting the marker.</p>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/failure-hammer-pickup.mp4" type="video/mp4"></video>
+        <p class="failure-caption">Failed to pick up and lift the hammer.</p>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/failure-hammer-place.mp4" type="video/mp4"></video>
+        <p class="failure-caption">Failed to place the hammer onto the table, also due mainly to the sim-to-real gap: contact of the hand's soft rubber cover is hard to simulate faithfully.</p>
+      </div>
+      <div class="item">
+        <video muted loop playsinline controls preload="none">
+          <source src="./static/videos/failure-hammer-break.mp4" type="video/mp4"></video>
+        <p class="failure-caption">Self-collision with the wrist camera, whose collision volume was not modeled during simulation training.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            Website template borrowed from <a href="https://nerfies.github.io/">NeRFies</a>.
+          </p>
+          <p>
+            This website is licensed under a <a rel="license"
+              href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+              Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+
+</html>
